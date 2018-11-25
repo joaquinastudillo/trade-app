@@ -15,13 +15,15 @@
                         </div>
                         <div class="form-group col-md-3">
                              <button 
-                                class="btn btn-success"
+                                class="btn"
                                 @click="buyStock"
-                                :disabled="quantity <= 0"
+                                :disabled="insufficientFunds ||quantity <= 0"
+                                :class="[ insufficientFunds ? 'btn-danger' : 'btn-success' ]"
                             >Buy
                             </button>
                         </div>
                     </div>
+                    <span v-if="insufficientFunds" class="badge badge-danger">Insuffficient Funds</span>
                 </div>
                 </div>
             </div>
@@ -34,6 +36,14 @@
         data(){
             return{
                 quantity: 0
+            }
+        },
+        computed: {
+            insufficientFunds(){
+                return this.quantity * this.stock.price > this.funds
+            },
+            funds(){
+                return this.$store.getters.funds
             }
         },
         methods: {
@@ -49,3 +59,10 @@
         }
     }
 </script>
+
+<style>
+.danger{
+    border: 1px solid red;
+}
+</style>
+

@@ -15,13 +15,15 @@
                         </div>
                         <div class="form-group col-md-3">
                              <button 
-                                class="btn btn-success"
+                                class="btn"
                                 @click="sellStock"
-                                :disabled="quantity <= 0"
+                                :disabled="insufficientQuantity || quantity <= 0"
+                                :class="[ insufficientQuantity ? 'btn-danger' : 'btn-success' ]"
                             >Sell
                             </button>
                         </div>
                     </div>
+                    <span v-if="insufficientQuantity" class="badge badge-danger">Not Enough Stock</span>
                 </div>
                 </div>
             </div>
@@ -37,17 +39,23 @@ import { mapActions } from 'vuex'
                 quantity: 0
             }
         },
+        computed: {
+            insufficientQuantity(){
+                return this.quantity > this.stock.quantity
+            }
+        },
         methods: {
-            ...mapActions([
-                'sellStock'
-            ]),
+            ...mapActions({
+                placeSellOrder: 'sellstock'
+            }),
             sellStock(){
                 const order = {
                     stockId: this.stock.id,
                     stockPrice: this.stock.price,
                     quantity: this.quantity
                 }
-                this.sellStock()
+                this.placeSellOrder(order)
+                this.quantity = 0
             }
         }
     }
